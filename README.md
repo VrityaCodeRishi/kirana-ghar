@@ -2,6 +2,9 @@
 This project is inspired by the book (Accidental CTO)[https://github.com/subhashchy/The-Accidental-CTO]. The project integrated the early engineering design decisions made by Subash and his team. After reading the book found the motivation to work with redis and apache kafka like distributed log as only used it at the time of writing never found opportunity to work with them.
 
 # Kirana Ghar – Architecture & Flow
+
+![Kirana Ghar architecture diagram](images/kirana-ghar-architecture-diagram.png)
+
 ## 1. App Flow Overview
 
 ```mermaid
