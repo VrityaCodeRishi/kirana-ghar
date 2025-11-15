@@ -19,5 +19,5 @@ frontend/build/
 frontend/.eslintcache
 npm-debug.log*
 yarn-error.log*
-connect/plugins/
+# connect/plugins/
 

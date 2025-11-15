@@ -31,8 +31,8 @@ flowchart TD
     F -->|replication| G[Postgres replicas]
 
     E --> H[Redis cache]
-    H -->|cache hit| E
-    H -->|cache miss| G
+    H -->|cache hit (customer reads)| E
+    H -->|cache miss (customer reads)| G
 
     E --> I[Redpanda Kafka]
     I --> J[Elasticsearch]
