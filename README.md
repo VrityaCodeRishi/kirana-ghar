@@ -19,36 +19,36 @@ This document explains how it all fits together and how to run it locally.
 
 ```mermaid
 flowchart TD
-    A[Landing page<br/>/] --> B[Choose role<br/>Shop Owner or Customer]
+    A[Landing page (/)] --> B[Choose role]
 
-    B --> C[Shop Owner Login / Register]
-    B --> D[Customer Login / Register]
+    B --> C[Shop Owner Login/Register]
+    B --> D[Customer Login/Register]
 
-    C -->|POST /token, /register| E[FastAPI Backend]
-    D -->|POST /token, /register| E
+    C -->|/token, /register| E[FastAPI Backend]
+    D -->|/token, /register| E
 
     E -->|writes users/shops/products| F[(Postgres Master)]
-    F -->|replication| G[(Postgres Replicas)]
+    F --> G[(Postgres Replicas)]
 
-    E -->|GET /me, /shops/, /shops/{id}/products/| H[Redis Cache]
+    E --> H[Redis Cache]
     H -->|cache hit| E
     H -->|cache miss| G
 
-    E -->|CDC via Debezium| I[(Redpanda Kafka)]
-    I -->|Elasticsearch sink| J[(Elasticsearch)]
+    E --> I[(Redpanda Kafka)]
+    I --> J[(Elasticsearch)]
 
-    subgraph Owner UI
+    subgraph Owner_UI
       C --> K[Shop Owner Dashboard]
       K -->|Create shop / Add product| E
       K -->|View own shops/products| E
     end
 
-    subgraph Customer UI
+    subgraph Customer_UI
       D --> L[Customer Dashboard]
       L -->|View all shops| E
-      L -->|Click shop → /shop/{id}| E
+      L -->|Open shop page| E
       L -->|Search shops/products| J
-      L -->|Cart / Buy Now (client‑side)| L
+      L -->|Cart & Buy (client-side)| L
     end
 ```
 
