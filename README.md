@@ -15,65 +15,181 @@ This document explains how it all fits together and how to run it locally.
 
 ---
 
-## 1. High‑Level Architecture
+## 1. App Flow Overview
 
-```mermaid
-flowchart LR
-    subgraph Client
-      Browser["React Frontend\n(http://localhost:3000)"]
-    end
+This section focuses on the *runtime flow* of the application rather than low‑level architecture.
 
-    subgraph Backend
-      API["FastAPI Backend\n(http://localhost:8000)"]
-    end
+### 1.1 Landing and authentication
 
-    subgraph Postgres["Postgres Cluster"]
-      PGMaster["postgres-master\n(master / writes"]
-      PGRep1["postgres-replica-1"]
-      PGRep2["postgres-replica-2"]
-    end
+- User visits `/` on the frontend.
+  - Sees options to log in or register as:
+    - **Shop owner**
+    - **Customer**
+- For each role:
+  - Login pages:
+    - `/shopowner-login`
+    - `/customer-login`
+  - Registration pages:
+    - `/shopowner-register`
+    - `/customer-register`
+- When the user submits login:
+  - Frontend sends `POST /token` with username/password.
+  - Backend authenticates against Postgres master and returns a bearer token (simplified as username).
+  - Frontend stores token in `localStorage` and calls `GET /me` to fetch:
+    - `username`
+    - `role`
+    - `full_name`, `address`, `mobile`
+  - The header shows “Welcome {full_name}” and the correct dashboard link based on role.
 
-    subgraph HAProxy["HAProxy read balancer"]
-      HAREAD["haproxy-read\nport 5439"]
-    end
+### 1.2 Shop owner flow
 
-    subgraph Kafka["CDC Pipeline"]
-      RP["Redpanda\nKafka broker"]
-      KC["Kafka Connect\nDebezium + ES sink"]
-    end
+1. **Dashboard entry**
+   - Authenticated shop owner navigates to `/shopowner-dashboard`.
+   - Backend verifies the token via `GET /me`.
 
-    ES[("Elasticsearch\nsearch indexes")]
-    RDS[("Redis\nread cache")]
+2. **Create shop**
+   - Owner submits a form with:
+     - `name`
+     - `city`
+   - Frontend sends `POST /shops/` (multipart form).
+   - Backend:
+     - Authorizes `role == "shopowner"`.
+     - Inserts into `shops` table on Postgres master.
+     - Logs a `DB WRITE to MASTER` entry.
+   - Debezium:
+     - Sees the insert in WAL and publishes a CDC event to topic `kirana.public.shops`.
 
-    Browser -->|HTTP| API
-    API -->|writes| PGMaster
-    API -->|reads| HAREAD
-    HAREAD --> PGRep1
-    HAREAD --> PGRep2
-    HAREAD -.backup .-> PGMaster
+3. **Add products**
+   - From the owner’s dashboard, they select a shop and add products (`name`, `price`).
+   - Frontend sends `POST /shops/{shop_id}/products/`.
+   - Backend:
+     - Ensures the current user owns the shop.
+     - Inserts into `products` table on Postgres master.
+   - Debezium:
+     - Emits CDC events into `kirana.public.products`.
 
-    PGMaster <-.logical WAL .-> KC
-    KC <--> RP
-    KC -->|sink| ES
+4. **Owner views their own data**
+   - Listing the owner’s shops:
+     - Frontend calls `GET /shops/`.
+     - Backend:
+       - Detects `role == "shopowner"`.
+       - Reads from master only the shops where `owner = current_user`.
+       - No Redis caching is used for owner‑scoped reads.
+   - Listing products in the owner’s shop:
+     - Frontend calls `GET /shops/{shop_id}/products/`.
+     - Backend:
+       - Reads from master for read‑your‑own‑writes.
+       - Enforces that the logged‑in owner actually owns the shop.
 
-    API -->|/search| ES
-    API <-->|cache| RDS
-```
+5. **Owner deletes or updates data**
+   - Deleting a shop:
+     - Frontend calls `DELETE /shops/{shop_id}/`.
+     - Backend:
+       - Confirms ownership.
+       - Deletes products for that shop, then the shop itself on master.
+     - Debezium:
+       - Emits delete CDC events into `kirana.public.products` and `kirana.public.shops`.
+   - Updating a product:
+     - Frontend calls `PUT /shops/{shop_id}/products/{product_id}/`.
+     - Backend updates the row on master; Debezium emits an update event.
 
-**Core data path**
+### 1.3 Customer flow (shops & products)
 
-- **Postgres master** – source of truth for all relational data (`users`, `shops`, `products`).
-- **Postgres replicas** – follow the master via streaming replication; used for most read traffic.
-- **FastAPI backend** – handles HTTP API, read/write split, and exposes a `/search` endpoint that talks to Elasticsearch.
-- **React frontend** – login, dashboards for shop owners and customers, product browsing, cart and “buy” flows, search UI.
+1. **Dashboard entry**
+   - Authenticated customer navigates to `/customer-dashboard`.
+   - Header shows their full name and a Logout button.
 
-**Search / CDC path**
+2. **View all shops**
+   - Frontend calls `GET /shops/`.
+   - Backend:
+     - Sees `role == "customer"`.
+     - First checks Redis for key `shops:customer`:
+       - On **cache HIT**:
+         - Returns cached list of shops.
+       - On **cache MISS**:
+         - Reads all shops from the read replicas via HAProxy.
+         - Logs `DB READ from REPLICA` and `Cache MISS` before setting Redis with TTL.
+   - Result: customers get a cached, read‑replica‑backed view of all shops.
 
-- **Debezium Postgres connector** – reads logical WAL changes from Postgres master.
-- **Redpanda** – Kafka‑compatible broker that holds change events.
-- **Elasticsearch sink connector** – consumes those events and indexes them into Elasticsearch.
-- **Backend Kafka consumer** – listens to the same CDC topics and invalidates Redis cache keys when rows change.
-- **Elasticsearch** – used only for search queries; not a system of record.
+3. **View a shop’s products**
+   - Customer clicks a shop, navigating to `/shop/{id}`.
+   - Frontend loads:
+     - `GET /shops/{id}` for shop details.
+     - `GET /shops/{id}/products/` for products.
+   - Backend:
+     - For shop details:
+       - Simple read from replicas, without caching (cheap, primary key access).
+     - For products:
+       - Uses Redis key `products:{shop_id}`:
+         - HIT → serve from cache.
+         - MISS → read from replicas and populate cache.
+
+4. **Cart and buying**
+   - On `/shop/{id}`:
+     - “Add to Cart”:
+       - Updates an in‑browser cart stored in `sessionStorage`.
+     - “Buy Now”:
+       - Simulates purchase with a UI message (no payment integration).
+     - Cart view:
+       - Shows items, quantity controls, “Buy Cart” and “Clear Cart”.
+   - No server‑side cart or order persistence is implemented; this is intentionally a lightweight flow.
+
+### 1.4 Search flow (shops & products via Elasticsearch)
+
+1. **Customer search**
+   - On the customer dashboard, a search bar calls:
+     - `GET /search?q={query}&type=all&size=20`
+   - Backend:
+     - Validates auth as usual.
+     - Builds an Elasticsearch query with:
+       - `multi_match` over shop/product fields (name, shop_name, shop_city).
+       - Optional city filter if specified.
+     - Calls ES and returns matching documents as a unified list.
+   - UI:
+     - Renders:
+       - Shop hits as “Shop: {name — city}” with a link to `/shop/{id}`.
+       - Product hits as “Product: {name} – ₹price” with a “View shop” button.
+
+2. **How ES gets its data**
+   - Every time a `shops` or `products` row changes on master:
+     - Debezium emits a CDC event into the corresponding Kafka topic.
+     - Kafka Connect Elasticsearch sink:
+       - Upserts or deletes the ES document with `_id = id`.
+   - Result:
+     - Search results reflect the same data as Postgres, including deletions and updates.
+
+### 1.5 Cache invalidation flow (CDC → Redis)
+
+1. **CDC event from Debezium**
+   - Row inserted, updated, or deleted in `shops` or `products`:
+     - Postgres master writes to WAL.
+     - Debezium reads the change and emits it to:
+       - `kirana.public.shops`
+       - or `kirana.public.products`.
+
+2. **Backend Kafka consumer**
+   - A small async consumer in the backend subscribes to these topics.
+   - For each message:
+     - Parses the record to find:
+       - `id` (shop id) for shops.
+       - `shop_id` for products.
+     - Derives which Redis keys are affected:
+       - Shops:
+         - Always invalidates `shops:customer`.
+         - Also invalidates `products:{shop_id}` for that shop.
+       - Products:
+         - Invalidates `products:{shop_id}` for that product’s shop.
+     - Logs which keys were cleared, e.g.:
+       - `CDC event from topic kirana.public.shops (...): invalidated Redis keys [...]`.
+
+3. **Next customer read**
+   - After invalidation:
+     - The next `GET /shops/` or `GET /shops/{id}/products/` sees a cache miss.
+     - Backend refills cache from the read replicas with fresh data.
+
+---
+
+## 2. Services in `docker-compose.yml`
 
 ---
 
