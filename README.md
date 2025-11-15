@@ -406,28 +406,4 @@ Debezium will stream these inserts to Redpanda, and the ES sink will index them 
 
 - Go to `/customer-login`, log in as a seeded customer.
 - Use the search bar on the Customer Dashboard to find shops/products.
-- Click into a shop → `/shop/:id`, add products to cart, “Buy Now” or “Buy Cart”.
-
----
-
-## 8. Troubleshooting Tips
-
-- **Search returns 503 / “Search unavailable”**
-  - Check ES is up: `curl http://localhost:9200/_cluster/health`.
-  - Check backend logs for `Elasticsearch not reachable` warnings.
-
-- **Search returns 200 with `{count: 0}`**
-  - Check connectors: `curl http://localhost:8083/connectors` and `.../status`.
-  - Check ES indexes: `curl 'http://localhost:9200/_cat/indices?v'` – expect `kirana.public.shops` and `kirana.public.products` with non‑zero docs.
-  - Make sure you’ve seeded or created data after connectors are RUNNING.
-
-- **Debezium source task FAILED** (publication slot errors)
-  - Confirm `dbz_publication` exists: `SELECT pubname FROM pg_publication;` on master.
-  - If not, ensure backend startup `ensure_publication()` is running (restart backend).
-
-- **Elasticsearch sink task FAILED** (struct key or topic rename issues)
-  - We already fixed this by setting `key.ignore=true` and using `topic.index.map` instead of `RegexRouter` to rename topics.
-
----
-
-This README should give you enough context to understand and extend the system. If you want to add more features (e.g., richer search filters, synonyms, or an outbox pattern for non‑relational events), the existing CDC + ES plumbing is a solid base to build on.
+- Click into a shop → `/shop/:id`, add products to cart, “Buy Now” or “Buy Cart”
