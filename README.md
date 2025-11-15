@@ -54,11 +54,6 @@ flowchart TD
 
 
 ---
-
-## 2. Services in `docker-compose.yml`
-
----
-
 ## 2. Services in `docker-compose.yml`
 
 ### Postgres
