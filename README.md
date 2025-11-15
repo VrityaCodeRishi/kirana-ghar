@@ -1,20 +1,7 @@
+# Introduction
+This project is inspired by the book (Accidental CTO)[https://github.com/subhashchy/The-Accidental-CTO]. The project integrated the early engineering design decisions made by Subash and his team. After reading the book found the motivation to work with redis and apache kafka like distributed log as only used it at the time of writing never found opportunity to work with them.
+
 # Kirana Ghar – Architecture & Flow
-
-This repo contains a small demo “Kirana Ghar” grocery app with:
-
-- FastAPI backend
-- React frontend
-- Postgres master + read replicas
-- HAProxy for read load‑balancing
-- Redpanda + Kafka Connect (Debezium) for CDC
-- Elasticsearch for full‑text search
-- Redis cache for read‑heavy endpoints
-- A small Kafka consumer in the backend to invalidate Redis on CDC events
-
-This document explains how it all fits together and how to run it locally.
-
----
-
 ## 1. App Flow Overview
 
 ```mermaid
