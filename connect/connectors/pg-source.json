@@ -1,0 +1,24 @@
+{
+  "name": "kirana-pg-source",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "postgres-master",
+    "database.port": "5432",
+    "database.user": "repl_user",
+    "database.password": "repl_pass",
+    "database.dbname": "grocerydb",
+    "topic.prefix": "kirana",
+    "plugin.name": "pgoutput",
+    "slot.name": "kirana_slot",
+    "publication.name": "dbz_publication",
+    "publication.autocreate.mode": "disabled",
+    "table.include.list": "public.shops,public.products",
+    "tombstones.on.delete": "false",
+    "include.schema.changes": "false",
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "true",
+    "transforms.unwrap.delete.handling.mode": "rewrite"
+  }
+}

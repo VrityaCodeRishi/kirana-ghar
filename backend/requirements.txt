@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+asyncpg
+databases[postgresql]
+passlib[argon2]
+argon2-cffi
+python-multipart
+pydantic
+elasticsearch>=8.12,<9
+redis>=5.0.0
+aiohttp
+aiokafka>=0.10.0
