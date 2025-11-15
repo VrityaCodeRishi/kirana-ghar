@@ -1,0 +1,473 @@
+:root {
+  --primary: #0f5e4d;
+  --primary-dark: #0b4739;
+  --accent: #fcb045;
+  --bg: #f5f6fa;
+  --card-bg: #ffffff;
+  --text: #1e1f24;
+  --muted: #6b6f79;
+  --success: #0f9d58;
+  --danger: #c0392b;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 400px at -10% -10%, rgba(252, 176, 69, 0.08), transparent 60%),
+    radial-gradient(1200px 400px at 110% -10%, rgba(15, 94, 77, 0.08), transparent 60%),
+    var(--bg);
+  color: var(--text);
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  letter-spacing: 0.3px;
+}
+
+.brand p {
+  margin: 0.1rem 0 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.view-container {
+  flex: 1;
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+  display: block;
+}
+
+.auth-card,
+.panel {
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: 0 25px 65px rgba(15, 94, 77, 0.12);
+  margin-bottom: 2rem;
+}
+
+.auth-wrapper {
+  min-height: calc(100vh - 220px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: min(420px, 100%);
+}
+
+/* Mobile tweaks */
+@media (max-width: 640px) {
+  .app-header {
+    padding: 1rem 1.25rem;
+  }
+  .view-container {
+    padding: 1.25rem 1rem 2rem;
+  }
+  .panel, .auth-card {
+    border-radius: 14px;
+    padding: 1.25rem;
+  }
+}
+
+.auth-card h2 {
+  margin-top: 0;
+  margin-bottom: 0.35rem;
+}
+
+.muted {
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+}
+
+label {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+input,
+button,
+select {
+  font: inherit;
+}
+
+input,
+select {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #d8dbe5;
+  background: #fdfdfd;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(15, 94, 77, 0.15);
+}
+
+.primary-button {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary), #13866f);
+  color: #fff;
+  border: none;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.primary-button.inline-button {
+  width: auto;
+}
+
+.primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.primary-button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 25px rgba(15, 94, 77, 0.25);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.panel h3 {
+  margin-top: 0;
+}
+
+/* Center key titles for a balanced look */
+.panel h2,
+.panel h3,
+.auth-card h2 {
+  text-align: center;
+}
+
+/* Header navigation */
+.nav {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.nav a {
+  color: #eaf7f4;
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.nav a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.welcome-text {
+  color: #ffffff;
+  font-weight: 700;
+  margin-right: 0.75rem;
+}
+
+/* Store two-column layout: products + cart */
+.store-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.store-cart.panel {
+  position: sticky;
+  top: 96px;
+  height: fit-content;
+}
+
+.panel.full-width {
+  width: 100%;
+}
+
+/* Product grid & cards */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.product-card {
+  background: #fff;
+  border: 1px solid #eef1f5;
+  border-radius: 14px;
+  padding: 1rem 1rem 1.25rem;
+  text-align: center;
+  box-shadow: 0 10px 24px rgba(15, 94, 77, 0.06);
+}
+
+.product-image {
+  height: 150px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f1f5f9, #e8f3ef);
+  margin-bottom: 0.9rem;
+}
+
+.product-card h4 {
+  margin: 0.35rem 0 0.25rem;
+}
+
+.price-lg {
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.65rem;
+}
+
+.cart-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.buy-button {
+  background: linear-gradient(135deg, #1aa16a, #13c08a);
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Highly visible Buy Now button for PDP */
+.buy-now {
+  background: linear-gradient(135deg, var(--accent), #ff8f1f) !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 0.95rem 1.25rem !important;
+  border-radius: 14px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3px;
+  box-shadow: 0 10px 24px rgba(252, 176, 69, 0.35);
+}
+
+.buy-now:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(252, 176, 69, 0.45);
+}
+
+@media (max-width: 920px) {
+  .store-layout {
+    grid-template-columns: 1fr;
+  }
+  .store-cart.panel {
+    position: static;
+  }
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.list button {
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #e1e4ec;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.list button:hover,
+.list button.active {
+  border-color: var(--primary);
+  background: rgba(15, 94, 77, 0.06);
+}
+
+.shop-pill {
+  font-weight: 600;
+  color: var(--text);
+  border-radius: 999px !important;
+  background: #f7fbfa !important;
+  border-color: rgba(15, 94, 77, 0.25) !important;
+}
+
+.products-list li,
+.cart-list li {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f0f1f5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.price-chip {
+  font-weight: 600;
+  color: var(--primary);
+  margin-left: 0.35rem;
+}
+
+.list-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.text-button {
+  width: auto !important;
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+}
+
+.text-button.danger {
+  color: #c0392b;
+}
+
+.action-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.35rem;
+}
+
+.outline-button {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: transparent;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.outline-button.danger {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.edit-card {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border-radius: 14px;
+  border: 1px dashed rgba(15, 94, 77, 0.4);
+  background: #fdfefc;
+}
+
+.ghost-button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ghost-button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.form-inline {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.form-inline input {
+  flex: 1;
+  min-width: 140px;
+}
+
+.inline-button {
+  min-width: 140px;
+}
+
+.section-title {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* Landing layout button improvements */
+.button-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.button-lg {
+  padding: 0.9rem 1.15rem !important;
+  min-width: 200px !important;
+  border-radius: 999px !important;
+  font-size: 0.95rem;
+}
