@@ -19,36 +19,36 @@ This document explains how it all fits together and how to run it locally.
 
 ```mermaid
 flowchart TD
-    A[Landing page (/)] --> B[Choose role]
+    A[Landing page] --> B[Choose role]
 
-    B --> C[Shop Owner Login/Register]
-    B --> D[Customer Login/Register]
+    B --> C[Shop owner login or register]
+    B --> D[Customer login or register]
 
-    C -->|/token, /register| E[FastAPI Backend]
-    D -->|/token, /register| E
+    C --> E[FastAPI backend]
+    D --> E
 
-    E -->|writes users/shops/products| F[(Postgres Master)]
-    F --> G[(Postgres Replicas)]
+    E -->|writes data| F[Postgres master]
+    F -->|replication| G[Postgres replicas]
 
-    E --> H[Redis Cache]
+    E --> H[Redis cache]
     H -->|cache hit| E
     H -->|cache miss| G
 
-    E --> I[(Redpanda Kafka)]
-    I --> J[(Elasticsearch)]
+    E --> I[Redpanda Kafka]
+    I --> J[Elasticsearch]
 
-    subgraph Owner_UI
-      C --> K[Shop Owner Dashboard]
-      K -->|Create shop / Add product| E
-      K -->|View own shops/products| E
+    subgraph OwnerUI
+      C --> K[Shop owner dashboard]
+      K -->|create shop or product| E
+      K -->|view own shops and products| E
     end
 
-    subgraph Customer_UI
-      D --> L[Customer Dashboard]
-      L -->|View all shops| E
-      L -->|Open shop page| E
-      L -->|Search shops/products| J
-      L -->|Cart & Buy (client-side)| L
+    subgraph CustomerUI
+      D --> L[Customer dashboard]
+      L -->|view all shops| E
+      L -->|open shop page| E
+      L -->|search shops or products| J
+      L -->|cart and buy in browser| L
     end
 ```
 
