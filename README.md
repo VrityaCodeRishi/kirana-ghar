@@ -337,6 +337,40 @@ The app includes a **customer-only** support chatbot powered by a simple **agent
   - **Agent**: `backend/app/support_bot.py` (LangGraph + FAQ RAG + intake).
   - **Workflow diagram**: `customer-support/graph.mmd` (Mermaid)
 
+```mermaid
+%%{init: {"flowchart": {"curve": "linear"}} }%%
+graph TD
+  __start__([__start__]):::first
+  route(route)
+  rag(rag)
+  general(general)
+  refund_extract(refund_extract)
+  refund(refund)
+  complaint_extract(complaint_extract)
+  complaint(complaint)
+  handoff(handoff)
+  __end__([__end__]):::last
+
+  __start__ --> route
+  route -. complaint .-> complaint_extract
+  route -. general .-> rag
+  route -. refund .-> refund_extract
+  route -.-> handoff
+
+  rag --> general
+  refund_extract --> refund
+  complaint_extract --> complaint
+
+  complaint --> __end__
+  general --> __end__
+  handoff --> __end__
+  refund --> __end__
+
+  classDef default fill:#f2f0ff,line-height:1.2
+  classDef first fill-opacity:0
+  classDef last fill:#bfb6fc
+```
+
 - **What it does**
   - **General questions** (policies/how-to): routes to **FAQ RAG** (Chroma) and answers from retrieved context.
   - **Refund / complaint cases** (specific issues): runs a short **intake flow** to collect required details.
@@ -349,7 +383,6 @@ The app includes a **customer-only** support chatbot powered by a simple **agent
 - **Required config**
   - `OPENAI_API_KEY` must be set (used by the LLM).
   - `SUPPORT_FAQ_PATH` points to the FAQ JSON mounted into the backend container (see `docker-compose.yml`).
-  - Workflow diagram (Mermaid): `customer-support/graph.mmd`
 
 ---
 
