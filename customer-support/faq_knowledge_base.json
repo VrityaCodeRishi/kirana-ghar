@@ -1,0 +1,417 @@
+{
+  "faq_version": "1.0",
+  "last_updated": "2024-01-01",
+  "categories": [
+    {
+      "category": "order_management",
+      "questions": [
+        {
+          "id": "order_001",
+          "question": "How can I check the status of my order?",
+          "answer": "You can check your order status by logging into your account and navigating to 'My Orders' section. You'll see all your orders with their current status: Pending, Confirmed, Processing, Shipped, Out for Delivery, or Delivered. You can also ask our chatbot with your order number for real-time updates.",
+          "keywords": ["order status", "track order", "order tracking", "check order", "order update"]
+        },
+        {
+          "id": "order_002",
+          "question": "Where is my order?",
+          "answer": "To track your order, please provide your order number. Once you share it, I can check the current status and delivery timeline. Orders typically take 2-5 business days for delivery depending on your location. You'll receive tracking updates via SMS and email once your order is shipped.",
+          "keywords": ["where is order", "order location", "track delivery", "order shipment"]
+        },
+        {
+          "id": "order_003",
+          "question": "When will my order arrive?",
+          "answer": "Delivery timeframes vary based on your location and the shop's location. Standard delivery takes 2-5 business days. Express delivery options (if available) can deliver within 24-48 hours. Once your order is shipped, you'll receive a tracking number and estimated delivery date. You can check the exact delivery date in your order details.",
+          "keywords": ["delivery time", "when will arrive", "delivery date", "estimated delivery", "arrival time"]
+        },
+        {
+          "id": "order_004",
+          "question": "How do I cancel my order?",
+          "answer": "You can cancel your order if it hasn't been shipped yet. To cancel: 1) Go to 'My Orders' in your account, 2) Find the order you want to cancel, 3) Click 'Cancel Order'. If the order is already shipped, you'll need to request a return after receiving it. Cancelled orders are refunded within 5-7 business days to your original payment method.",
+          "keywords": ["cancel order", "order cancellation", "how to cancel", "cancel purchase"]
+        },
+        {
+          "id": "order_005",
+          "question": "Can I cancel an order that's already shipped?",
+          "answer": "Once an order is shipped, you cannot cancel it directly. However, you can refuse the delivery when it arrives, or accept it and then request a return within our return policy timeframe (typically 7 days from delivery). If you refuse delivery, the order will be returned to the shop and you'll receive a full refund within 5-7 business days.",
+          "keywords": ["cancel shipped order", "order already shipped", "cancel after shipping", "refuse delivery"]
+        },
+        {
+          "id": "order_006",
+          "question": "How do I view my order history?",
+          "answer": "To view your order history: 1) Log into your account, 2) Click on 'My Orders' or 'Order History' in the dashboard, 3) You'll see all your past and current orders with details like order date, items, total amount, and status. You can filter by date range or order status. If you need help finding a specific order, provide the order number or approximate date.",
+          "keywords": ["order history", "past orders", "previous orders", "view orders", "order list"]
+        },
+        {
+          "id": "order_007",
+          "question": "I can't find my order confirmation",
+          "answer": "Order confirmations are sent to your registered email address and mobile number immediately after placing an order. If you can't find it: 1) Check your spam/junk folder, 2) Verify the email address in your account settings, 3) Check your SMS inbox for the confirmation message. You can also view all your orders in the 'My Orders' section of your account. If you still can't find it, provide your order details and I can help locate it.",
+          "keywords": ["order confirmation", "confirmation email", "order receipt", "order not found", "missing confirmation"]
+        },
+        {
+          "id": "order_008",
+          "question": "Can I change the delivery address for my order?",
+          "answer": "You can change the delivery address only if your order hasn't been shipped yet. To change it: 1) Go to 'My Orders', 2) Find your order, 3) Click 'Change Address' or 'Edit Delivery Details'. Once the order is shipped, address changes cannot be made. In such cases, you may need to contact the delivery service directly or refuse the delivery and place a new order with the correct address.",
+          "keywords": ["change address", "update delivery address", "modify address", "edit address", "wrong address"]
+        },
+        {
+          "id": "order_009",
+          "question": "Can I add items to my existing order?",
+          "answer": "Unfortunately, you cannot add items to an order once it's been placed. Each order is processed separately. If you want additional items, please place a new order. If both orders are from the same shop and haven't shipped yet, you can contact the shop owner who might be able to combine them, but this is not guaranteed. For urgent additions, place a new order and both will be delivered together if timing permits.",
+          "keywords": ["add items", "modify order", "change order", "add products", "update order items"]
+        }
+      ]
+    },
+    {
+      "category": "returns_refunds",
+      "questions": [
+        {
+          "id": "return_001",
+          "question": "How do I return a product?",
+          "answer": "To return a product: 1) Go to 'My Orders' in your account, 2) Select the order containing the item you want to return, 3) Click 'Return Item' or 'Request Return', 4) Select the items and reason for return, 5) Submit the return request. Once approved, you'll receive return instructions. Items must be returned within 7 days of delivery in original packaging with tags attached. Refunds are processed within 5-7 business days after we receive the returned item.",
+          "keywords": ["return product", "how to return", "return item", "return request", "product return"]
+        },
+        {
+          "id": "return_002",
+          "question": "What is your return policy?",
+          "answer": "Our return policy allows returns within 7 days of delivery. Items must be: unused, in original packaging, with all tags and labels attached. For returns: 1) Log into your account and go to 'My Orders', 2) Select the order and click 'Return', 3) Choose items and reason, 4) Submit request. Once approved, you'll get return instructions. Refunds are processed within 5-7 business days after we receive and verify the returned items. Some items like perishables or personalized products may not be eligible for return.",
+          "keywords": ["return policy", "returns policy", "return terms", "return conditions", "return rules"]
+        },
+        {
+          "id": "return_003",
+          "question": "When will I get my refund?",
+          "answer": "Refunds are processed within 5-7 business days after we receive and verify your returned item. The refund will be credited to your original payment method: - Credit/Debit cards: 5-7 business days - UPI/Wallet: 2-3 business days - Cash on Delivery: Refunded to your bank account (you'll need to provide bank details). You'll receive an email confirmation once the refund is processed. If it's been longer than 7 business days, please contact us with your return ID.",
+          "keywords": ["refund time", "when refund", "refund processing", "refund duration", "refund timeline"]
+        },
+        {
+          "id": "return_004",
+          "question": "I haven't received my refund yet",
+          "answer": "If you haven't received your refund within the expected timeframe (5-7 business days after we receive the return), please: 1) Check your email for refund confirmation, 2) Verify your payment method (check bank statement for credit/debit cards), 3) Contact us with your return ID or order number. We'll investigate and update you within 24-48 hours. Refunds can sometimes take longer during holidays or if there are bank processing delays. We'll ensure you receive your refund.",
+          "keywords": ["no refund", "refund missing", "refund not received", "refund delay", "refund issue"]
+        },
+        {
+          "id": "return_005",
+          "question": "I received a damaged product",
+          "answer": "We're sorry to hear that. Please report the damage immediately: 1) Take photos of the damaged product and packaging, 2) Go to 'My Orders' and select the order, 3) Click 'Report Issue' or 'Return Item', 4) Select 'Damaged/Defective' as the reason and upload photos, 5) Submit the request. We'll review within 24 hours and either arrange a replacement or process a full refund. For damaged items, we may arrange pickup at no cost to you. Please keep the item and packaging until the issue is resolved.",
+          "keywords": ["damaged product", "broken item", "defective product", "damaged delivery", "product damage"]
+        },
+        {
+          "id": "return_006",
+          "question": "I received the wrong item",
+          "answer": "We apologize for the error. To resolve this: 1) Go to 'My Orders' and find the order, 2) Click 'Report Issue' or 'Return Item', 3) Select 'Wrong Item Received' as the reason, 4) Provide details of what you ordered vs. what you received, 5) Submit the request. We'll arrange a pickup for the wrong item and send you the correct product, or process a full refund if the correct item is unavailable. This will be resolved within 2-3 business days.",
+          "keywords": ["wrong item", "incorrect product", "wrong delivery", "mistaken item", "wrong order"]
+        },
+        {
+          "id": "return_007",
+          "question": "The product I received is different from what I ordered",
+          "answer": "We're sorry for the mix-up. Please report this immediately: 1) Go to 'My Orders' in your account, 2) Select the order, 3) Click 'Report Issue', 4) Select 'Wrong Product' and describe the difference, 5) Upload photos if possible, 6) Submit. We'll verify and either send the correct product or process a full refund. We'll arrange free pickup of the incorrect item. You'll receive updates via email and SMS. This typically gets resolved within 2-3 business days.",
+          "keywords": ["different product", "not what ordered", "product mismatch", "incorrect item", "wrong product"]
+        },
+        {
+          "id": "return_008",
+          "question": "What items are not eligible for return?",
+          "answer": "The following items are generally not eligible for return: - Perishable goods (fruits, vegetables, dairy, etc.) - Personalized or custom-made products - Items without original packaging or tags - Used or damaged items (unless damaged during delivery) - Items returned after 7 days of delivery - Gift cards or vouchers. If you're unsure about return eligibility, please contact us with your order details and we'll clarify. We may make exceptions for defective items or delivery errors.",
+          "keywords": ["non-returnable", "cannot return", "return eligibility", "items not returnable", "return restrictions"]
+        }
+      ]
+    },
+    {
+      "category": "product_inquiries",
+      "questions": [
+        {
+          "id": "product_001",
+          "question": "Is a specific product available?",
+          "answer": "To check product availability, you can: 1) Search for the product name on our platform, 2) Visit the shop page to see available products, 3) Ask me the product name and I can check availability. Product availability is updated in real-time. If a product shows as out of stock, you can check back later or contact the shop owner for restocking information. Some shops may offer pre-orders for out-of-stock items.",
+          "keywords": ["product available", "in stock", "availability", "product stock", "is available"]
+        },
+        {
+          "id": "product_002",
+          "question": "When will a product be back in stock?",
+          "answer": "Stock availability depends on the individual shop. To find out when a product will be restocked: 1) Check the product page for restock notifications, 2) Contact the shop owner directly through their shop page, 3) Enable 'Notify Me' if available for out-of-stock items. Shop owners typically restock within 2-7 days depending on the product. I can help you find alternative shops that have the same product in stock.",
+          "keywords": ["back in stock", "restock", "when available", "stock update", "out of stock"]
+        },
+        {
+          "id": "product_003",
+          "question": "What are the details of a specific product?",
+          "answer": "To get product details: 1) Search for the product on our platform, 2) Click on the product to view full details including name, price, description, and shop information, 3) You can also ask me about a specific product by name. Product pages show: product name, price, description, shop name, and availability status. If you need more specific information, please provide the product name and I'll fetch the details for you.",
+          "keywords": ["product details", "product information", "product specs", "product description", "product info"]
+        },
+        {
+          "id": "product_004",
+          "question": "What's the price of a product?",
+          "answer": "Product prices are displayed on each product page and in search results. To check prices: 1) Search for the product, 2) View the product listing which shows the price, 3) Visit the shop page to see all products with prices. Prices are set by individual shop owners and may vary between shops. If you tell me the product name, I can search and provide the current price from available shops.",
+          "keywords": ["product price", "how much", "price", "cost", "pricing"]
+        },
+        {
+          "id": "product_005",
+          "question": "Can you recommend similar products?",
+          "answer": "Yes! I can help you find similar products. Please tell me: 1) The product name you're interested in, or 2) The type of product you're looking for. I'll search our platform and suggest similar or alternative products. You can also browse products by category on shop pages, or use our search feature with keywords related to what you need. Our search is powered by Elasticsearch and can find products based on name, description, and category.",
+          "keywords": ["similar products", "recommendations", "alternatives", "suggest products", "related items"]
+        },
+        {
+          "id": "product_006",
+          "question": "Do you have products from a specific category?",
+          "answer": "Yes, we have products across various categories. To find products by category: 1) Use the search feature with category keywords (e.g., 'groceries', 'dairy', 'snacks'), 2) Browse different shops as they may specialize in certain categories, 3) Ask me to search for a specific category. Our platform connects you with multiple local shops, each offering different product ranges. Tell me what category you're looking for and I'll help you find relevant shops and products.",
+          "keywords": ["product category", "category products", "products by type", "category search", "product type"]
+        }
+      ]
+    },
+    {
+      "category": "shop_information",
+      "questions": [
+        {
+          "id": "shop_001",
+          "question": "Where is a specific shop located?",
+          "answer": "Shop locations are displayed on each shop's page. To find a shop location: 1) Search for the shop name, 2) Click on the shop to view details including city and location information, 3) Shop pages show the city where the shop is located. For exact addresses, you may need to contact the shop owner directly. You can also search for shops by city using our search feature. Tell me the shop name and I can provide its location details.",
+          "keywords": ["shop location", "where is shop", "shop address", "shop city", "shop location"]
+        },
+        {
+          "id": "shop_002",
+          "question": "What are the shop hours?",
+          "answer": "Shop hours vary by individual shop. To find shop hours: 1) Visit the shop's page on our platform, 2) Contact the shop owner directly through the platform, 3) Some shops display their hours on their page. Shop hours are managed by each shop owner independently. If you need specific shop hours, provide the shop name and I can help you find the information or guide you on how to contact the shop owner.",
+          "keywords": ["shop hours", "opening hours", "shop timings", "when open", "business hours"]
+        },
+        {
+          "id": "shop_003",
+          "question": "How can I contact a shop?",
+          "answer": "To contact a shop: 1) Visit the shop's page on our platform, 2) Look for contact information if available (some shops display phone numbers or contact details), 3) You can place an order and the shop owner will contact you, 4) Use the messaging feature if available on the shop page. Shop contact details are managed by individual shop owners. If you need to contact a specific shop, tell me the shop name and I can help you find their contact information.",
+          "keywords": ["contact shop", "shop contact", "shop phone", "shop owner contact", "reach shop"]
+        },
+        {
+          "id": "shop_004",
+          "question": "How do I find shops near me?",
+          "answer": "To find shops near you: 1) Use our search feature and filter by city, 2) Enter your city name in the search bar, 3) Browse the 'All Shops' section on the customer dashboard which shows shops by city. Our platform displays shops with their city information. You can search for shops in your city or ask me to find shops in a specific location. Currently, we show shops by city - provide your city name and I'll list available shops there.",
+          "keywords": ["shops near me", "local shops", "nearby shops", "shops in city", "find shops"]
+        },
+        {
+          "id": "shop_005",
+          "question": "Which shops sell a specific product?",
+          "answer": "To find shops selling a specific product: 1) Search for the product name, 2) The search results will show which shops have that product, 3) Each product listing shows the shop name - click 'View Shop' to go to that shop's page. Our search feature can find products across all shops. Tell me the product name and I'll search and show you which shops have it available, along with prices from each shop.",
+          "keywords": ["shops with product", "which shop sells", "find shop for product", "product shops", "shops selling"]
+        }
+      ]
+    },
+    {
+      "category": "account_authentication",
+      "questions": [
+        {
+          "id": "account_001",
+          "question": "How do I update my profile?",
+          "answer": "To update your profile: 1) Log into your account, 2) Go to 'My Profile' or 'Account Settings' (accessible from the dashboard), 3) Edit your information including full name, address, and mobile number, 4) Click 'Save' to update. You can update your address, mobile number, and full name. Your username cannot be changed. If you need help accessing your profile settings, let me know.",
+          "keywords": ["update profile", "edit profile", "change profile", "modify account", "profile settings"]
+        },
+        {
+          "id": "account_002",
+          "question": "I forgot my password",
+          "answer": "To reset your password: 1) Go to the login page, 2) Click 'Forgot Password' or 'Reset Password', 3) Enter your username or registered email, 4) You'll receive password reset instructions via email or SMS, 5) Follow the link to create a new password. If you don't receive the reset link, check your spam folder or contact support. Make sure you're using the correct username or email associated with your account.",
+          "keywords": ["forgot password", "reset password", "password recovery", "change password", "lost password"]
+        },
+        {
+          "id": "account_003",
+          "question": "I want to change my password",
+          "answer": "To change your password: 1) Log into your account, 2) Go to 'Account Settings' or 'Security Settings', 3) Find the 'Change Password' option, 4) Enter your current password and new password, 5) Confirm the new password and save. Your new password should be strong (at least 8 characters with a mix of letters, numbers, and special characters). If you can't find this option, let me know and I'll guide you further.",
+          "keywords": ["change password", "update password", "modify password", "new password", "password change"]
+        },
+        {
+          "id": "account_004",
+          "question": "How do I update my address?",
+          "answer": "To update your address: 1) Log into your account, 2) Go to 'My Profile' or 'Account Settings', 3) Find the 'Address' field, 4) Edit your address information, 5) Click 'Save'. Your updated address will be used for future orders. If you have a pending order and need to change the delivery address, go to 'My Orders' and use the 'Change Address' option if the order hasn't shipped yet.",
+          "keywords": ["update address", "change address", "edit address", "modify address", "new address"]
+        },
+        {
+          "id": "account_005",
+          "question": "I can't log in to my account",
+          "answer": "If you're having trouble logging in: 1) Verify you're using the correct username (not email), 2) Check that your password is correct (passwords are case-sensitive), 3) Try resetting your password using 'Forgot Password', 4) Clear your browser cache and cookies, 5) Try a different browser or incognito mode. If the issue persists, your account might be locked after multiple failed attempts. Contact support with your username and we'll help you regain access.",
+          "keywords": ["can't login", "login issue", "login problem", "unable to login", "login failed"]
+        },
+        {
+          "id": "account_006",
+          "question": "My account is locked",
+          "answer": "Accounts are temporarily locked after multiple failed login attempts for security. To unlock: 1) Wait 15-30 minutes and try logging in again, 2) Use the 'Forgot Password' option to reset your password, 3) If still locked, contact support with your username. We'll verify your identity and unlock your account. To prevent future locks, ensure you're using the correct username and password. Consider resetting your password if you're unsure of the current one.",
+          "keywords": ["account locked", "locked account", "unlock account", "account blocked", "suspended account"]
+        }
+      ]
+    },
+    {
+      "category": "cart_checkout",
+      "questions": [
+        {
+          "id": "cart_001",
+          "question": "How do I add items to my cart?",
+          "answer": "To add items to your cart: 1) Browse shops and products, 2) When you find a product you want, click 'Add to Cart' button on the product, 3) You can adjust the quantity using + and - buttons, 4) Your cart is saved in your browser session. You can add multiple items from the same shop or different shops. To view your cart, look for the cart icon or go to a shop page where your cart is displayed. Items in your cart are saved until you complete the purchase or clear the cart.",
+          "keywords": ["add to cart", "add items", "cart", "shopping cart", "add product"]
+        },
+        {
+          "id": "cart_002",
+          "question": "I lost my cart items",
+          "answer": "Cart items are stored in your browser's session storage, so they may be lost if: 1) You close the browser tab, 2) You clear browser data, 3) You use a different browser or device. To prevent this: - Complete your purchase before closing the tab, - Use the same browser and tab, - Consider creating an account to save cart items (if this feature is available). Unfortunately, we cannot recover lost cart items, but you can easily add products again. I can help you find the products you were interested in.",
+          "keywords": ["lost cart", "cart disappeared", "cart items gone", "cart cleared", "missing cart"]
+        },
+        {
+          "id": "cart_003",
+          "question": "Can I save my cart for later?",
+          "answer": "Currently, cart items are saved in your browser session. To keep your cart: 1) Keep the browser tab open, 2) Don't clear browser data, 3) Use the same browser and device. For a more permanent solution, we recommend: - Completing your purchase when ready, - Taking note of the products you want (product names or shop links), - Re-adding items when you're ready to purchase. If you're logged in, some cart data may persist. We're working on improving cart persistence features.",
+          "keywords": ["save cart", "cart for later", "save for later", "wishlist", "cart persistence"]
+        },
+        {
+          "id": "checkout_001",
+          "question": "I'm having trouble checking out",
+          "answer": "If you're experiencing checkout issues: 1) Ensure all items in your cart are from the same shop (currently, orders are shop-specific), 2) Verify you're logged into your account, 3) Check that your delivery address is complete in your profile, 4) Try refreshing the page and attempting checkout again, 5) Clear browser cache if the issue persists. If the problem continues, describe the specific error message or issue you're seeing and I'll help troubleshoot. You can also try using 'Buy Now' for individual items as an alternative.",
+          "keywords": ["checkout problem", "checkout issue", "can't checkout", "checkout error", "purchase problem"]
+        },
+        {
+          "id": "checkout_002",
+          "question": "What payment methods do you accept?",
+          "answer": "Payment methods vary by shop, but commonly accepted methods include: - Credit and Debit Cards (Visa, Mastercard, RuPay), - UPI (Unified Payments Interface) - PhonePe, Google Pay, Paytm, etc., - Digital Wallets, - Cash on Delivery (COD) - available for many shops. Payment options are displayed during checkout. Each shop owner sets their accepted payment methods. If you need a specific payment method, check with the individual shop or during checkout. For payment-related issues, contact support.",
+          "keywords": ["payment methods", "how to pay", "payment options", "accepted payments", "payment types"]
+        },
+        {
+          "id": "checkout_003",
+          "question": "Can I pay cash on delivery?",
+          "answer": "Cash on Delivery (COD) availability depends on the individual shop. Many shops offer COD as a payment option. To check: 1) Add items to cart and proceed to checkout, 2) Look for 'Cash on Delivery' in the payment options, 3) If available, select COD and complete your order. COD orders may have certain restrictions like minimum order value or delivery area limitations. If COD is not available for a particular shop, you'll need to use online payment methods. Check the payment options during checkout.",
+          "keywords": ["cash on delivery", "COD", "pay on delivery", "cash payment", "delivery payment"]
+        }
+      ]
+    },
+    {
+      "category": "delivery_shipping",
+      "questions": [
+        {
+          "id": "delivery_001",
+          "question": "What are your delivery options?",
+          "answer": "Delivery options vary by shop and location. Common options include: - Standard Delivery: 2-5 business days, - Express Delivery: 24-48 hours (if available), - Same-day Delivery: Available in some areas for select shops. Delivery charges and timeframes are shown during checkout. Each shop sets their own delivery policies. To see delivery options for your order: 1) Add items to cart, 2) Proceed to checkout, 3) View available delivery options and timeframes. Delivery is typically to the address in your profile, but you can change it during checkout.",
+          "keywords": ["delivery options", "delivery methods", "shipping options", "delivery types", "how delivered"]
+        },
+        {
+          "id": "delivery_002",
+          "question": "How long does delivery take?",
+          "answer": "Delivery timeframes depend on your location and the shop's location: - Standard delivery: 2-5 business days, - Express delivery: 24-48 hours (if available), - Same-day delivery: Available in select areas. Exact delivery time is calculated during checkout based on your address. You'll receive an estimated delivery date when you place your order. Once shipped, you'll get tracking information with a more precise delivery timeline. Delivery times exclude weekends and holidays.",
+          "keywords": ["delivery time", "how long", "delivery duration", "shipping time", "when delivered"]
+        },
+        {
+          "id": "delivery_003",
+          "question": "Do you deliver to my location?",
+          "answer": "Delivery availability depends on the shop's delivery area. To check: 1) Add items to cart from a shop, 2) Proceed to checkout and enter your delivery address, 3) The system will show if delivery is available to your location. Delivery areas vary by shop - some shops deliver city-wide, others may have specific areas. If delivery isn't available to your location, you may need to: - Choose a different shop that delivers to your area, - Use a pickup option if available, - Contact the shop owner to inquire about delivery to your area.",
+          "keywords": ["delivery area", "deliver to location", "delivery available", "shipping area", "delivery coverage"]
+        },
+        {
+          "id": "delivery_004",
+          "question": "How do I track my delivery?",
+          "answer": "To track your delivery: 1) Log into your account, 2) Go to 'My Orders', 3) Find your order and click 'Track Order', 4) You'll see the current status and tracking updates. You'll also receive SMS and email updates when: - Your order is confirmed, - Your order is shipped (with tracking number), - Your order is out for delivery, - Your order is delivered. If you have a tracking number, you can also track it directly with the delivery service. Provide your order number and I can check the current delivery status.",
+          "keywords": ["track delivery", "delivery tracking", "track order", "tracking number", "delivery status"]
+        },
+        {
+          "id": "delivery_005",
+          "question": "I missed my delivery, what should I do?",
+          "answer": "If you missed a delivery: 1) Check your phone for missed calls or messages from the delivery service, 2) Contact the delivery service using the tracking number provided, 3) They will typically attempt delivery again (usually 1-2 more attempts), 4) You can also contact the shop owner to coordinate redelivery. Most delivery services will leave a note or send an SMS with instructions. You may be able to: - Schedule a specific delivery time, - Pick up from a nearby delivery center, - Arrange redelivery. If multiple attempts fail, the order may be returned to the shop and refunded.",
+          "keywords": ["missed delivery", "delivery missed", "not home", "delivery attempt", "redelivery"]
+        }
+      ]
+    },
+    {
+      "category": "payment_billing",
+      "questions": [
+        {
+          "id": "payment_001",
+          "question": "My payment failed",
+          "answer": "If your payment failed: 1) Check that your payment method has sufficient funds or credit limit, 2) Verify your card details are correct (card number, expiry, CVV), 3) Ensure your UPI is linked and active, 4) Check your internet connection and try again, 5) Contact your bank if the issue persists. Failed payments are not charged - no money is deducted. You can retry the payment or choose a different payment method. If the problem continues, contact support with your order details and we'll help resolve it.",
+          "keywords": ["payment failed", "payment error", "transaction failed", "payment declined", "failed transaction"]
+        },
+        {
+          "id": "payment_002",
+          "question": "I was charged twice",
+          "answer": "If you were charged twice: 1) Check your bank statement or payment app to confirm duplicate charges, 2) Verify if both charges are from the same order or different orders, 3) Contact support immediately with: - Order numbers (if any), - Transaction IDs, - Payment method used, - Amount charged, - Date and time of transactions. We'll investigate and process a refund for any duplicate charges within 24-48 hours. Duplicate charges are rare but we'll resolve this quickly. Keep your transaction receipts for reference.",
+          "keywords": ["double charge", "charged twice", "duplicate payment", "multiple charges", "extra charge"]
+        },
+        {
+          "id": "payment_003",
+          "question": "I need an invoice or receipt",
+          "answer": "To get your invoice or receipt: 1) Log into your account, 2) Go to 'My Orders', 3) Find your order and click 'View Details' or 'Invoice', 4) Download or print the invoice. Invoices are generated automatically when you place an order and are available in your order history. You'll also receive an email confirmation with order details that serves as a receipt. If you can't find your invoice, provide your order number and I can help you locate it or generate a new one.",
+          "keywords": ["invoice", "receipt", "bill", "order receipt", "payment receipt"]
+        },
+        {
+          "id": "payment_004",
+          "question": "How do refunds work?",
+          "answer": "Refunds are processed as follows: - For cancelled orders (before shipping): Refunded within 5-7 business days, - For returns: Refunded within 5-7 business days after we receive and verify the returned item, - For payment failures: No charge occurs, so no refund needed. Refunds are credited to your original payment method: - Cards: 5-7 business days, - UPI/Wallet: 2-3 business days, - COD: To your bank account (provide bank details). You'll receive email confirmation when the refund is processed. If you have questions about a specific refund, provide your order or return number.",
+          "keywords": ["refund process", "how refunds work", "refund policy", "refund method", "refund details"]
+        }
+      ]
+    },
+    {
+      "category": "general_support",
+      "questions": [
+        {
+          "id": "general_001",
+          "question": "How do I search for products?",
+          "answer": "To search for products: 1) Use the search bar on the Customer Dashboard, 2) Type the product name, category, or keywords, 3) Click 'Search' or press Enter, 4) Results will show both shops and products matching your search. You can search by: - Product name, - Shop name, - City/location, - Product category. Our search is powered by Elasticsearch and supports fuzzy matching, so it can find products even with slight spelling variations. You can also filter results by type (shops, products, or all).",
+          "keywords": ["how to search", "search products", "find products", "product search", "search feature"]
+        },
+        {
+          "id": "general_002",
+          "question": "How do I place an order?",
+          "answer": "To place an order: 1) Browse shops and products, 2) Add items to your cart by clicking 'Add to Cart', 3) Review your cart items and quantities, 4) Click 'Buy Cart' or use 'Buy Now' for individual items, 5) Ensure you're logged in and your delivery address is correct, 6) Select payment method and complete checkout. You'll receive an order confirmation via email and SMS. Make sure your profile has a complete delivery address before placing an order.",
+          "keywords": ["how to order", "place order", "how to buy", "purchase process", "order process"]
+        },
+        {
+          "id": "general_003",
+          "question": "How does the platform work?",
+          "answer": "Kirana Ghar is a marketplace connecting customers with local grocery shops. Here's how it works: 1) **Browse**: Search or browse shops and products, 2) **Shop**: Add items to your cart from different shops, 3) **Order**: Place orders and choose payment method, 4) **Delivery**: Receive your order at your address, 5) **Support**: Get help anytime through this chatbot. Shop owners create shops and list products. Customers can search across all shops, compare prices, and order from multiple local shops. Each shop manages their own inventory and deliveries.",
+          "keywords": ["how it works", "platform guide", "how to use", "getting started", "platform overview"]
+        },
+        {
+          "id": "general_004",
+          "question": "What are your terms and conditions?",
+          "answer": "Our terms and conditions cover: - User accounts and responsibilities, - Order placement and payment terms, - Delivery policies and timelines, - Return and refund policies, - Shop owner responsibilities, - Platform usage guidelines. For detailed terms and conditions, please visit the Terms of Service page on our platform or contact support for a copy. Key points: Orders are subject to shop availability, delivery times are estimates, returns must be within 7 days, and refunds follow our refund policy. If you have specific questions about terms, let me know.",
+          "keywords": ["terms and conditions", "terms of service", "T&C", "user agreement", "platform terms"]
+        },
+        {
+          "id": "general_005",
+          "question": "The website is not working",
+          "answer": "If you're experiencing website issues: 1) Refresh the page (F5 or Ctrl+R), 2) Clear your browser cache and cookies, 3) Try a different browser (Chrome, Firefox, Safari), 4) Check your internet connection, 5) Try incognito/private browsing mode, 6) Disable browser extensions temporarily. If the problem persists: - Describe the specific issue (error message, what's not working), - Mention which page or feature isn't working, - Share your browser and device information. We'll investigate and fix any platform issues. You can also try accessing from a different device.",
+          "keywords": ["website not working", "site down", "platform error", "technical issue", "website problem"]
+        },
+        {
+          "id": "general_006",
+          "question": "How do I report a bug?",
+          "answer": "To report a bug: 1) Note the specific issue you encountered, 2) Describe what you were trying to do, 3) Note any error messages, 4) Mention your browser and device, 5) Take screenshots if possible, 6) Contact support with these details. You can report bugs through: - This chatbot (describe the issue), - Support email (if available), - Contact form on the platform. Include: - Steps to reproduce the bug, - Expected vs. actual behavior, - Browser/device information, - Screenshots or error messages. We appreciate your feedback and will work to fix issues promptly.",
+          "keywords": ["report bug", "bug report", "technical issue", "error report", "problem report"]
+        }
+      ]
+    },
+    {
+      "category": "escalation",
+      "questions": [
+        {
+          "id": "escalation_001",
+          "question": "I want to speak to a human agent",
+          "answer": "I understand you'd like to speak with a human agent. While I'm here to help with most queries, for complex issues or if you prefer human assistance, please: 1) Describe your issue in detail, 2) I'll create a support ticket and escalate it to our human support team, 3) You'll receive a response within 24-48 hours via email or phone. For urgent matters, please mention 'URGENT' and I'll prioritize your request. Our support team is available Monday-Saturday, 9 AM - 6 PM. You can also reach out through our contact form on the platform.",
+          "keywords": ["human agent", "speak to human", "customer service", "support agent", "talk to person"]
+        },
+        {
+          "id": "escalation_002",
+          "question": "This is urgent",
+          "answer": "I understand this is urgent. Please provide: 1) Your order number or issue details, 2) The nature of the urgent issue, 3) Your contact information. I'll immediately escalate this to our priority support team who will contact you within 2-4 hours. For critical issues like: - Payment problems, - Delivery emergencies, - Account security issues, - Product safety concerns, we prioritize these requests. Urgent matters are handled by our support team who will reach out via phone or email as soon as possible.",
+          "keywords": ["urgent", "emergency", "critical", "immediate help", "urgent issue"]
+        },
+        {
+          "id": "escalation_003",
+          "question": "I need to file a complaint",
+          "answer": "To file a complaint: 1) Please describe your complaint in detail, 2) Include relevant order numbers, transaction IDs, or shop names, 3) Provide any supporting evidence (screenshots, photos, etc.), 4) I'll create a formal complaint ticket. Our support team will review your complaint within 24-48 hours and respond with a resolution plan. For complaints about: - Shop owners or products, - Delivery issues, - Payment problems, - Platform issues, we take all complaints seriously and will investigate thoroughly. You'll receive updates via email.",
+          "keywords": ["file complaint", "complaint", "lodge complaint", "register complaint", "report issue"]
+        },
+        {
+          "id": "escalation_004",
+          "question": "I have a billing dispute",
+          "answer": "For billing disputes, please provide: 1) Order number(s) involved, 2) Transaction ID(s) and amounts, 3) Description of the dispute (wrong amount, duplicate charge, etc.), 4) Screenshots of bank statements or payment confirmations. I'll escalate this to our billing team who will investigate within 24-48 hours. Billing disputes are handled with priority. You'll receive: - An acknowledgment within 24 hours, - Investigation results within 3-5 business days, - Refund or correction if the dispute is valid. Keep all transaction records for reference.",
+          "keywords": ["billing dispute", "charge dispute", "payment dispute", "billing issue", "wrong charge"]
+        },
+        {
+          "id": "escalation_005",
+          "question": "I'm not satisfied with the resolution",
+          "answer": "I'm sorry the previous resolution wasn't satisfactory. To help further: 1) Please describe what resolution was provided, 2) Explain why it wasn't satisfactory, 3) Share what resolution you're seeking, 4) Provide your case/ticket number if you have one. I'll escalate this to a senior support manager for review. They will: - Review your case history, - Consider alternative solutions, - Contact you within 48 hours with a revised resolution. We're committed to finding a satisfactory solution. Your feedback helps us improve our service.",
+          "keywords": ["not satisfied", "unsatisfactory", "dispute resolution", "appeal", "reconsider"]
+        }
+      ]
+    }
+  ]
+}
+

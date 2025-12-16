@@ -6,7 +6,7 @@ import json
 import contextlib
 from fastapi import FastAPI, HTTPException, Depends, status, Form
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from sqlalchemy import Table, Column, String, Float, MetaData, ForeignKey, text
+from sqlalchemy import Table, Column, String, Float, Integer, DateTime, MetaData, ForeignKey, text
 from sqlalchemy.sql import select
 from databases import Database
 from passlib.context import CryptContext
@@ -17,7 +17,9 @@ from elasticsearch import NotFoundError
 from redis import asyncio as redis
 from aiokafka import AIOKafkaConsumer
 import uuid
+from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
+from .support_bot import SupportBot
 
 DATABASE_URL_DEFAULT = "postgresql+asyncpg://groceryuser:grocerypass@localhost:5432/grocerydb"
 DATABASE_URL_WRITE = os.getenv("DATABASE_URL_WRITE") or os.getenv("DATABASE_URL") or DATABASE_URL_DEFAULT
@@ -80,6 +82,45 @@ products = Table(
     Column("price", Float),
 )
 
+orders = Table(
+    "orders",
+    metadata,
+    Column("id", String, primary_key=True),
+    Column("customer_username", String, ForeignKey("users.username"), nullable=False),
+    Column("shop_id", String, ForeignKey("shops.id"), nullable=False),
+    Column("status", String, nullable=False),
+    Column("payment_method", String, nullable=False),
+    Column("payment_status", String, nullable=False),
+    Column("total_amount", Float, nullable=False),
+    Column("created_at", DateTime, nullable=False),
+    Column("updated_at", DateTime, nullable=False),
+)
+
+order_items = Table(
+    "order_items",
+    metadata,
+    Column("id", String, primary_key=True),
+    Column("order_id", String, ForeignKey("orders.id"), nullable=False),
+    Column("product_id", String, ForeignKey("products.id"), nullable=False),
+    Column("product_name_snapshot", String, nullable=False),
+    Column("unit_price", Float, nullable=False),
+    Column("quantity", Integer, nullable=False),
+    Column("line_total", Float, nullable=False),
+)
+
+support_cases = Table(
+    "support_cases",
+    metadata,
+    Column("id", String, primary_key=True),
+    Column("thread_id", String, nullable=False),
+    Column("customer_username", String, ForeignKey("users.username"), nullable=False),
+    Column("order_id", String, nullable=True),
+    Column("case_type", String, nullable=False),  # refund|complaint
+    Column("status", String, nullable=False),  # open|closed
+    Column("payload_json", String, nullable=False),
+    Column("created_at", DateTime, nullable=False),
+)
+
 app = FastAPI()
 
 app.add_middleware(
@@ -121,6 +162,60 @@ class ProductIn(BaseModel):
 class ProductOut(ProductIn):
     id: str
     shop_id: str
+
+
+class OrderItemIn(BaseModel):
+    product_id: str
+    quantity: int = 1
+
+
+class CreateOrderRequest(BaseModel):
+    shop_id: str
+    items: list[OrderItemIn]
+    payment_method: str = "cod"  # cod/upi/card/wallet
+
+
+class OrderItemOut(BaseModel):
+    id: str
+    product_id: str
+    product_name_snapshot: str
+    unit_price: float
+    quantity: int
+    line_total: float
+
+
+class OrderOut(BaseModel):
+    id: str
+    shop_id: str
+    customer_username: str
+    status: str
+    payment_method: str
+    payment_status: str
+    total_amount: float
+    created_at: datetime
+    updated_at: datetime
+
+
+class OrderDetailOut(OrderOut):
+    items: list[OrderItemOut]
+
+
+class UpdateOrderStatusRequest(BaseModel):
+    status: str
+
+
+class SupportChatRequest(BaseModel):
+    message: str
+    thread_id: str | None = None
+
+
+class SupportChatResponse(BaseModel):
+    thread_id: str
+    reply: str
+    route: str
+    intake_open: bool = False
+    missing_fields: list[str] = []
+    case_id: str | None = None
 
 
 async def verify_password(plain_password, hashed_password):
@@ -343,6 +438,43 @@ async def startup():
           price FLOAT NOT NULL
         );
         """,
+        """
+        CREATE TABLE IF NOT EXISTS orders (
+          id VARCHAR PRIMARY KEY,
+          customer_username VARCHAR NOT NULL REFERENCES users(username),
+          shop_id VARCHAR NOT NULL REFERENCES shops(id),
+          status VARCHAR NOT NULL,
+          payment_method VARCHAR NOT NULL,
+          payment_status VARCHAR NOT NULL,
+          total_amount FLOAT NOT NULL,
+          created_at TIMESTAMP NOT NULL,
+          updated_at TIMESTAMP NOT NULL
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS order_items (
+          id VARCHAR PRIMARY KEY,
+          order_id VARCHAR NOT NULL REFERENCES orders(id),
+          product_id VARCHAR NOT NULL REFERENCES products(id),
+          product_name_snapshot VARCHAR NOT NULL,
+          unit_price FLOAT NOT NULL,
+          quantity INT NOT NULL,
+          line_total FLOAT NOT NULL
+        );
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS support_cases (
+          id VARCHAR PRIMARY KEY,
+          thread_id VARCHAR NOT NULL,
+          customer_username VARCHAR NOT NULL REFERENCES users(username),
+          order_id VARCHAR,
+          case_type VARCHAR NOT NULL,
+          status VARCHAR NOT NULL,
+          payload_json VARCHAR NOT NULL,
+          created_at TIMESTAMP NOT NULL
+        );
+        """,
+        "ALTER TABLE IF EXISTS support_cases ADD COLUMN IF NOT EXISTS thread_id VARCHAR;",
     ]
     for statement in schema_statements:
         await database_write.execute(text(statement))
@@ -380,6 +512,23 @@ async def shutdown():
         kafka_task.cancel()
         with contextlib.suppress(asyncio.CancelledError):
             await kafka_task
+
+
+support_bot: SupportBot | None = None
+
+
+@app.on_event("startup")
+async def init_support_bot():
+    # This is intentionally lightweight: FAQ is embedded via env path resolution
+    # and Chroma is in-memory. If OPENAI_API_KEY is missing, requests will fail
+    # with a clear error.
+    global support_bot
+    try:
+        support_bot = SupportBot()
+        logger.info("SupportBot initialized")
+    except Exception as exc:
+        support_bot = None
+        logger.warning("SupportBot failed to initialize: %s", exc)
 
 
 @app.post("/register", status_code=201)
@@ -426,6 +575,360 @@ async def read_me(current_user=Depends(get_current_user)):
         "full_name": current_user["full_name"],
         "address": current_user["address"],
         "mobile": current_user["mobile"],
+    }
+
+
+@app.post("/orders", response_model=OrderDetailOut, status_code=201)
+async def create_order(payload: CreateOrderRequest, current_user=Depends(get_current_user)):
+    if current_user["role"] != "customer":
+        raise HTTPException(status_code=403, detail="Only customers can place orders")
+    if not payload.items:
+        raise HTTPException(status_code=400, detail="Order must have at least one item")
+    if any(i.quantity <= 0 for i in payload.items):
+        raise HTTPException(status_code=400, detail="Quantity must be >= 1")
+
+    shop = await get_shop(payload.shop_id, use_master=False)
+    if not shop:
+        raise HTTPException(status_code=404, detail="Shop not found")
+
+    product_ids = list({it.product_id for it in payload.items})
+    # Fetch product rows
+    prod_rows = await database_read.fetch_all(products.select().where(products.c.id.in_(product_ids)))
+    prod_map = {r["id"]: r for r in prod_rows}
+    if len(prod_map) != len(product_ids):
+        raise HTTPException(status_code=400, detail="One or more products not found")
+    # Validate all products belong to the shop
+    for pid, row in prod_map.items():
+        if row["shop_id"] != payload.shop_id:
+            raise HTTPException(status_code=400, detail=f"Product {pid} does not belong to this shop")
+
+    now = datetime.utcnow()
+    order_id = str(uuid.uuid4())
+    status_val = "created"
+    payment_method = (payload.payment_method or "cod").lower()
+    if payment_method not in ("cod", "upi", "card", "wallet"):
+        raise HTTPException(status_code=400, detail="Invalid payment_method")
+    payment_status = "pending" if payment_method != "cod" else "pending"
+
+    items_out: list[dict] = []
+    total_amount = 0.0
+
+    # Build items + totals from authoritative DB prices
+    for it in payload.items:
+        p = prod_map[it.product_id]
+        unit_price = float(p["price"])
+        qty = int(it.quantity)
+        line_total = unit_price * qty
+        total_amount += line_total
+        items_out.append(
+            {
+                "id": str(uuid.uuid4()),
+                "order_id": order_id,
+                "product_id": p["id"],
+                "product_name_snapshot": p["name"],
+                "unit_price": unit_price,
+                "quantity": qty,
+                "line_total": line_total,
+            }
+        )
+
+    # Persist order + items
+    await database_write.execute(
+        orders.insert().values(
+            id=order_id,
+            customer_username=current_user["username"],
+            shop_id=payload.shop_id,
+            status=status_val,
+            payment_method=payment_method,
+            payment_status=payment_status,
+            total_amount=total_amount,
+            created_at=now,
+            updated_at=now,
+        )
+    )
+    await database_write.execute_many(order_items.insert(), items_out)
+    logger.info("DB WRITE to MASTER: orders INSERT id='%s' customer='%s' shop='%s'", order_id, current_user["username"], payload.shop_id)
+
+    return {
+        "id": order_id,
+        "shop_id": payload.shop_id,
+        "customer_username": current_user["username"],
+        "status": status_val,
+        "payment_method": payment_method,
+        "payment_status": payment_status,
+        "total_amount": total_amount,
+        "created_at": now,
+        "updated_at": now,
+        "items": [
+            {
+                "id": it["id"],
+                "product_id": it["product_id"],
+                "product_name_snapshot": it["product_name_snapshot"],
+                "unit_price": it["unit_price"],
+                "quantity": it["quantity"],
+                "line_total": it["line_total"],
+            }
+            for it in items_out
+        ],
+    }
+
+
+@app.get("/orders/me", response_model=list[OrderOut])
+async def list_my_orders(current_user=Depends(get_current_user), limit: int = 20):
+    if current_user["role"] != "customer":
+        raise HTTPException(status_code=403, detail="Only customers can view their orders")
+    limit = max(1, min(limit, 50))
+    q = (
+        orders.select()
+        .where(orders.c.customer_username == current_user["username"])
+        .order_by(orders.c.created_at.desc())
+        .limit(limit)
+    )
+    rows = await database_read.fetch_all(q)
+    return [dict(r) for r in rows]
+
+
+@app.get("/orders/{order_id}", response_model=OrderDetailOut)
+async def get_order_details(order_id: str, current_user=Depends(get_current_user)):
+    row = await database_read.fetch_one(orders.select().where(orders.c.id == order_id))
+    if not row:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    # Auth: customer can see own; shopowner can see orders for their shop
+    if current_user["role"] == "customer":
+        if row["customer_username"] != current_user["username"]:
+            raise HTTPException(status_code=403, detail="Not authorized to view this order")
+    elif current_user["role"] == "shopowner":
+        shop = await get_shop(row["shop_id"], use_master=True)
+        if not shop or shop["owner"] != current_user["username"]:
+            raise HTTPException(status_code=403, detail="Not authorized to view this order")
+    else:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    items = await database_read.fetch_all(order_items.select().where(order_items.c.order_id == order_id))
+    return {**dict(row), "items": [dict(i) for i in items]}
+
+
+@app.post("/orders/{order_id}/cancel", response_model=OrderOut)
+async def cancel_order(order_id: str, current_user=Depends(get_current_user)):
+    if current_user["role"] != "customer":
+        raise HTTPException(status_code=403, detail="Only customers can cancel orders")
+    row = await database_read.fetch_one(orders.select().where(orders.c.id == order_id))
+    if not row:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if row["customer_username"] != current_user["username"]:
+        raise HTTPException(status_code=403, detail="Not authorized to cancel this order")
+    if row["status"] not in ("created", "confirmed"):
+        raise HTTPException(status_code=400, detail="Order cannot be cancelled at this stage")
+
+    now = datetime.utcnow()
+    await database_write.execute(
+        orders.update().where(orders.c.id == order_id).values(status="cancelled", updated_at=now)
+    )
+    updated = await database_read.fetch_one(orders.select().where(orders.c.id == order_id))
+    return dict(updated)
+
+
+@app.patch("/orders/{order_id}/status", response_model=OrderOut)
+async def update_order_status(order_id: str, payload: UpdateOrderStatusRequest, current_user=Depends(get_current_user)):
+    if current_user["role"] != "shopowner":
+        raise HTTPException(status_code=403, detail="Only shop owners can update order status")
+    row = await database_read.fetch_one(orders.select().where(orders.c.id == order_id))
+    if not row:
+        raise HTTPException(status_code=404, detail="Order not found")
+    shop = await get_shop(row["shop_id"], use_master=True)
+    if not shop or shop["owner"] != current_user["username"]:
+        raise HTTPException(status_code=403, detail="Not authorized to update this order")
+
+    new_status = (payload.status or "").lower()
+    allowed = {"confirmed", "packed", "shipped", "delivered", "cancelled"}
+    if new_status not in allowed:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Allowed: {sorted(allowed)}")
+
+    now = datetime.utcnow()
+    await database_write.execute(
+        orders.update().where(orders.c.id == order_id).values(status=new_status, updated_at=now)
+    )
+    updated = await database_read.fetch_one(orders.select().where(orders.c.id == order_id))
+    return dict(updated)
+
+
+@app.post("/support/chat", response_model=SupportChatResponse)
+async def support_chat(payload: SupportChatRequest, current_user=Depends(get_current_user)):
+    if current_user["role"] != "customer":
+        raise HTTPException(status_code=403, detail="Support chatbot is only available to customers")
+    if not support_bot:
+        raise HTTPException(status_code=503, detail="Support chatbot unavailable")
+    msg = (payload.message or "").strip()
+    if not msg:
+        raise HTTPException(status_code=400, detail="message is required")
+
+    # If thread_id not provided, create a stable per-user thread for the browser session.
+    # Frontend should store the returned thread_id and reuse it on subsequent calls.
+    thread_id = payload.thread_id or f"{current_user['username']}:{uuid.uuid4()}"
+
+    # Tool-like context: recent orders for this customer (top 3), with item summaries.
+    recent_orders: list[dict] = []
+    try:
+        o_rows = await database_read.fetch_all(
+            orders.select()
+            .where(orders.c.customer_username == current_user["username"])
+            .order_by(orders.c.created_at.desc())
+            .limit(3)
+        )
+        order_ids = [r["id"] for r in o_rows]
+        items_by_order: dict[str, list[str]] = {oid: [] for oid in order_ids}
+        if order_ids:
+            it_rows = await database_read.fetch_all(order_items.select().where(order_items.c.order_id.in_(order_ids)))
+            for it in it_rows:
+                items_by_order.setdefault(it["order_id"], []).append(
+                    f"{it['product_name_snapshot']}×{it['quantity']}"
+                )
+        for r in o_rows:
+            oid = r["id"]
+            recent_orders.append(
+                {
+                    "id": oid,
+                    "status": r["status"],
+                    "total_amount": float(r["total_amount"]),
+                    "items_summary": ", ".join(items_by_order.get(oid, [])[:3]),
+                }
+            )
+        logger.info(
+            "Support tools: fetched %d recent orders for customer '%s'",
+            len(recent_orders),
+            current_user["username"],
+        )
+    except Exception as exc:
+        logger.info("Failed to fetch recent orders for support tools: %s", exc)
+
+    try:
+        out = support_bot.chat(thread_id=thread_id, message=msg, recent_orders=recent_orders)
+    except Exception as exc:
+        logger.warning("SupportBot chat failed: %s", exc)
+        raise HTTPException(status_code=503, detail="Support chatbot unavailable")
+
+    logger.info(
+        "SupportBot result for customer '%s': route=%s intake_open=%s missing_fields=%s",
+        current_user["username"],
+        out.get("route", "unknown"),
+        bool(out.get("intake_open", False)),
+        out.get("missing_fields", []),
+    )
+
+    case_id: str | None = None
+    # If a refund/complaint intake has completed, persist a support case with order snapshot.
+    try:
+        route = out.get("route")
+        intake_open = bool(out.get("intake_open", False))
+        intake = out.get("intake", {}) or {}
+        if route in ("refund", "complaint") and bool(out.get("just_completed")) and not intake_open and intake:
+            # Dedupe: if we already created an open case for this thread+type, don't create another.
+            # Use MASTER here to avoid duplicate case creation due to replica lag.
+            existing = await database_write.fetch_one(
+                support_cases.select()
+                .where(support_cases.c.thread_id == thread_id)
+                .where(support_cases.c.case_type == str(route))
+                .where(support_cases.c.status == "open")
+                .order_by(support_cases.c.created_at.desc())
+                .limit(1)
+            )
+            if existing:
+                case_id = existing["id"]
+                logger.info(
+                    "Support case: skipping duplicate create; existing case_id='%s' thread_id='%s' customer='%s'",
+                    case_id,
+                    thread_id,
+                    current_user["username"],
+                )
+                # still return case_id; do not overwrite the existing record
+                raise StopIteration
+
+            now = datetime.utcnow()
+            order_id = intake.get("order_id")
+
+            order_snapshot: dict | None = None
+            if isinstance(order_id, str) and order_id and order_id != "unknown":
+                logger.info(
+                    "Support case: attempting order snapshot fetch for customer '%s' order_id='%s'",
+                    current_user["username"],
+                    order_id,
+                )
+                # Use MASTER for order snapshot reads to avoid replica lag right after order creation.
+                o = await database_write.fetch_one(
+                    orders.select()
+                    .where(orders.c.id == order_id)
+                    .where(orders.c.customer_username == current_user["username"])
+                )
+                if o:
+                    it_rows = await database_write.fetch_all(
+                        order_items.select().where(order_items.c.order_id == order_id)
+                    )
+                    order_snapshot = {
+                        "id": o["id"],
+                        "shop_id": o["shop_id"],
+                        "status": o["status"],
+                        "payment_method": o["payment_method"],
+                        "payment_status": o["payment_status"],
+                        "total_amount": float(o["total_amount"]),
+                        "created_at": (o["created_at"].isoformat() if o["created_at"] else None),
+                        "items": [
+                            {
+                                "product_id": it["product_id"],
+                                "name": it["product_name_snapshot"],
+                                "unit_price": float(it["unit_price"]),
+                                "quantity": int(it["quantity"]),
+                                "line_total": float(it["line_total"]),
+                            }
+                            for it in it_rows
+                        ],
+                    }
+                    logger.info(
+                        "Support case: fetched order snapshot for order_id='%s' (items=%d, total=%.2f)",
+                        order_id,
+                        len(it_rows),
+                        float(o["total_amount"]),
+                    )
+                else:
+                    logger.info(
+                        "Support case: order snapshot NOT found/authorized for customer '%s' order_id='%s'",
+                        current_user["username"],
+                        order_id,
+                    )
+
+            case_payload = {
+                "route": route,
+                "user": {"username": current_user["username"]},
+                "intake": intake,
+                "order": order_snapshot,
+                "created_at": now.isoformat(),
+            }
+            case_id = str(uuid.uuid4())
+            await database_write.execute(
+                support_cases.insert().values(
+                    id=case_id,
+                    thread_id=thread_id,
+                    customer_username=current_user["username"],
+                    order_id=order_id if isinstance(order_id, str) else None,
+                    case_type=str(route),
+                    status="open",
+                    payload_json=json.dumps(case_payload),
+                    created_at=now,
+                )
+            )
+            logger.info("Created support_case id='%s' type='%s' customer='%s'", case_id, route, current_user["username"])
+    except StopIteration:
+        pass
+    except Exception as exc:
+        logger.warning("Failed to persist support case: %s", exc)
+
+    return {
+        "thread_id": out["thread_id"],
+        "reply": out["reply"],
+        "route": out.get("route", "handoff"),
+        "intake_open": bool(out.get("intake_open", False)),
+        "missing_fields": out.get("missing_fields", []),
+        "case_id": case_id,
     }
 
 

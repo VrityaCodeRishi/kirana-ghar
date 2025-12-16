@@ -110,8 +110,13 @@ services:
       ES_URL: http://elasticsearch:9200
       REDIS_URL: redis://redis:6379/0
       KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      SUPPORT_FAQ_PATH: /app/app/support_faq_knowledge_base.json
+      SUPPORT_MODEL: gpt-5.2
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     ports:
       - "8000:8000"
+    volumes:
+      - ./customer-support/faq_knowledge_base.json:/app/app/support_faq_knowledge_base.json:ro
 
   frontend:
     build: ./frontend

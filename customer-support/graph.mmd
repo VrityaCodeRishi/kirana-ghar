@@ -1,0 +1,31 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	route(route)
+	rag(rag)
+	general(general)
+	refund_extract(refund_extract)
+	refund(refund)
+	complaint_extract(complaint_extract)
+	complaint(complaint)
+	handoff(handoff)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> route;
+	complaint_extract --> complaint;
+	rag --> general;
+	refund_extract --> refund;
+	route -. &nbsp;complaint&nbsp; .-> complaint_extract;
+	route -.-> handoff;
+	route -. &nbsp;general&nbsp; .-> rag;
+	route -. &nbsp;refund&nbsp; .-> refund_extract;
+	complaint --> __end__;
+	general --> __end__;
+	handoff --> __end__;
+	refund --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

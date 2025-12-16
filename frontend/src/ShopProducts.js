@@ -75,14 +75,56 @@ export default function ShopProducts({ token, logout }) {
     return `${shop.name}${shop.city ? ` — ${shop.city}` : ""}`;
   }, [shop]);
 
-  const buyNow = (product, qty = 1) => {
-    alert(`Purchased ${product.name} × ${qty}. Thank you!`);
+  async function placeOrder(targetShopId, orderItems) {
+    const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+    const res = await fetch("http://localhost:8000/orders", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        shop_id: targetShopId,
+        items: orderItems.map((it) => ({ product_id: it.id, quantity: it.quantity || 1 })),
+        payment_method: "cod",
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.detail || "Order failed");
+    return data;
+  }
+
+  const buyNow = async (product, qty = 1) => {
+    try {
+      const order = await placeOrder(shopId, [{ ...product, quantity: qty }]);
+      alert(`Order placed! Order ID: ${order.id}`);
+    } catch (e) {
+      alert(e.message || "Order failed");
+    }
   };
-  const buyCart = () => {
+
+  const buyCart = async () => {
     if (items.length === 0) return alert("Cart is empty");
-    const total = items.reduce((s, it) => s + it.price * it.quantity, 0);
-    clear();
-    alert(`Purchase complete. Items: ${items.length}. Total: ${INR}${total.toFixed(2)}`);
+    try {
+      // Global cart can contain items from multiple shops. Create one order per shop.
+      const byShop = items.reduce((acc, it) => {
+        const sid = it.shop_id || shopId;
+        acc[sid] = acc[sid] || [];
+        acc[sid].push(it);
+        return acc;
+      }, {});
+
+      const orderResults = [];
+      for (const [sid, shopItems] of Object.entries(byShop)) {
+        const order = await placeOrder(sid, shopItems);
+        orderResults.push(order);
+      }
+
+      clear();
+      const summary = orderResults
+        .map((o) => `- ${o.id} (₹${Number(o.total_amount).toFixed(2)})`)
+        .join("\n");
+      alert(`Order(s) placed!\n${summary}`);
+    } catch (e) {
+      alert(e.message || "Order failed");
+    }
   };
 
   return (
@@ -111,7 +153,7 @@ export default function ShopProducts({ token, logout }) {
                   <button className="primary-button inline-button buy-now" onClick={() => buyNow(p, 1)}>
                     Buy Now
                   </button>
-                  <button className="outline-button" onClick={() => add(p, 1)}>
+                  <button className="outline-button" onClick={() => add({ ...p, shop_id: shopId, shop_name: shop?.name }, 1)}>
                     Add to Cart
                   </button>
                 </div>
@@ -132,6 +174,11 @@ export default function ShopProducts({ token, logout }) {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
                   <span>
                     {it.name}
+                    {it.shop_name && (
+                      <span className="muted" style={{ marginLeft: 8, fontSize: 12 }}>
+                        ({it.shop_name})
+                      </span>
+                    )}
                     <span className="price-chip">
                       {INR}
                       {(it.price * it.quantity).toFixed(2)}

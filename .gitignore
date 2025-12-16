@@ -3,6 +3,7 @@ Thumbs.db
 *.swp
 *.swo
 *~
+.env
 .idea/
 .vscode/
 __pycache__/

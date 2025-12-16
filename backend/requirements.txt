@@ -11,3 +11,8 @@ elasticsearch>=8.12,<9
 redis>=5.0.0
 aiohttp
 aiokafka>=0.10.0
+langgraph
+langchain
+langchain-openai
+langchain-chroma
+chromadb

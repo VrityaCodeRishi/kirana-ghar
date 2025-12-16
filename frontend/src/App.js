@@ -7,6 +7,7 @@ import CustomerDashboard from "./CustomerDashboard";
 import ShopProducts from "./ShopProducts";
 import Landing from "./Landing";
 import Register from "./Register";
+import SupportChat from "./SupportChat";
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -46,6 +47,13 @@ function App() {
   const handleLogout = () => {
     setToken(null);
     localStorage.removeItem("token");
+    // Clear any stored support thread id(s) (best-effort).
+    try {
+      const keys = Object.keys(localStorage);
+      keys.forEach((k) => {
+        if (k.startsWith("support_thread_id:")) localStorage.removeItem(k);
+      });
+    } catch (_) {}
   };
 
   const displayName = useMemo(() => {
@@ -67,6 +75,11 @@ function App() {
         <nav className="nav">
           {displayName && (
             <span className="welcome-text">Welcome {displayName}</span>
+          )}
+          {token && user?.role === "customer" && (
+            <Link className="nav-link" to="/support">
+              Support
+            </Link>
           )}
           {token && (
             <button className="ghost-button" onClick={handleLogout}>
@@ -154,6 +167,18 @@ function App() {
                 <div className="panel"><p className="muted">Loading...</p></div>
               ) : token && user?.role === "customer" ? (
                 <ShopProducts token={token} logout={handleLogout} />
+              ) : (
+                <Navigate to="/customer-login" />
+              )
+            }
+          />
+          <Route
+            path="/support"
+            element={
+              loadingUser ? (
+                <div className="panel"><p className="muted">Loading...</p></div>
+              ) : token && user?.role === "customer" ? (
+                <SupportChat token={token} user={user} />
               ) : (
                 <Navigate to="/customer-login" />
               )
