@@ -335,6 +335,7 @@ The app includes a **customer-only** support chatbot powered by a simple **agent
   - **Frontend**: `/support` route (React) shows a chat UI.
   - **Backend**: `POST /support/chat` (FastAPI) executes the workflow and returns a reply.
   - **Agent**: `backend/app/support_bot.py` (LangGraph + FAQ RAG + intake).
+  - **Workflow diagram**: `customer-support/graph.mmd` (Mermaid)
 
 - **What it does**
   - **General questions** (policies/how-to): routes to **FAQ RAG** (Chroma) and answers from retrieved context.
@@ -348,6 +349,7 @@ The app includes a **customer-only** support chatbot powered by a simple **agent
 - **Required config**
   - `OPENAI_API_KEY` must be set (used by the LLM).
   - `SUPPORT_FAQ_PATH` points to the FAQ JSON mounted into the backend container (see `docker-compose.yml`).
+  - Workflow diagram (Mermaid): `customer-support/graph.mmd`
 
 ---
 
