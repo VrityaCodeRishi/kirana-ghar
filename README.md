@@ -327,6 +327,28 @@ File: `frontend/src/ShopProducts.js`
       - “Clear Cart”.
       - `+` / `-` controls per item.
 
+### Customer support chatbot (agentic workflow)
+
+The app includes a **customer-only** support chatbot powered by a simple **agentic workflow** (LangGraph):
+
+- **Where it lives**
+  - **Frontend**: `/support` route (React) shows a chat UI.
+  - **Backend**: `POST /support/chat` (FastAPI) executes the workflow and returns a reply.
+  - **Agent**: `backend/app/support_bot.py` (LangGraph + FAQ RAG + intake).
+
+- **What it does**
+  - **General questions** (policies/how-to): routes to **FAQ RAG** (Chroma) and answers from retrieved context.
+  - **Refund / complaint cases** (specific issues): runs a short **intake flow** to collect required details.
+  - Uses “tool-like” context: backend fetches **recent orders** for the logged-in customer and injects them so the bot can say “pick 1/2/3” instead of asking for an order id.
+  - When an intake completes, backend creates a **`support_cases`** record with an optional **order snapshot** (order + items).
+
+- **Access control**
+  - The chatbot is **available only to customers**. Shop owners receive `403` if they call the endpoint.
+
+- **Required config**
+  - `OPENAI_API_KEY` must be set (used by the LLM).
+  - `SUPPORT_FAQ_PATH` points to the FAQ JSON mounted into the backend container (see `docker-compose.yml`).
+
 ---
 
 ## 7. Running the Stack
